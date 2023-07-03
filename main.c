@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define MAX_NUM_CHAMPIONS 200
 #define MAX_NAME_LENGTH 100
@@ -25,7 +26,7 @@ int main() {
     // Creating variables
     char line[MAX_NAME_LENGTH];
     char *championsList[MAX_NUM_CHAMPIONS];
-    int count = 0;
+    int numberOfChampions = 0;
 
     // Writes file to list
     while (fgets(line, sizeof(line), championsFile) != NULL) {
@@ -47,17 +48,61 @@ int main() {
         }
 
         // Adding champion name to list
-        championsList[count] = championName;
-        ++count;
+        championsList[numberOfChampions] = championName;
+        ++numberOfChampions;
 
         // Check if list size was reached
-        if (count >= MAX_NUM_CHAMPIONS) {
-            printf("Maximum number of champions reached.\nChange MAX_NUM_CHAMPIONS variable");
+        if (numberOfChampions >= MAX_NUM_CHAMPIONS) {
+            printf("Maximum number of champions reached\n"
+                   "Modify MAX_NUM_CHAMPIONS variable to fix");
             break;
         }
     }
     // Close file
     fclose(championsFile);
-    
+
+    // Getting number of players
+    long numberPlayers;
+    char input[10];
+    char *endPointer;
+    while (1) {
+        // Getting user input
+        printf("Enter number of players (maximum 10)>> ");
+        fgets(input, sizeof(input), stdin);
+        numberPlayers = strtol(input, &endPointer, 10);
+
+        // Check if input is valid
+        if (errno == ERANGE || *endPointer != '\n' || numberPlayers < 1 || numberPlayers > 10){
+            printf("Invalid input");
+        } else
+            break;
+    }
+
+    // Creating variables
+    char playerName[MAX_NAME_LENGTH];
+    char *playerList[10];
+
+    // Getting players nicknames
+    for (int player = 0; player < numberPlayers; ++player) {
+        printf("Enter player %d nickname >> ", player + 1);
+        scanf("%s", playerName);
+        getchar();
+
+        // Allocating memory
+        char* playerNickname = malloc(strlen(playerName) + 1);
+
+        // Copying player nickname to list
+        strcpy(playerNickname, playerName);
+        playerList[player] = playerNickname;
+    }
+
+    // Free allocated memory
+    for (int champion = 0; champion < numberOfChampions; ++champion) {
+        free(championsList[champion]);
+    }
+    for (int player = 0; player < numberPlayers; ++player) {
+        free(playerList[player]);
+    }
+
     return 1;
 }
