@@ -17,8 +17,8 @@ int main() {
     championsFile = fopen(fileName, "r");
     // Check if file was correctly opened
     if (!championsFile) {
-        printf("Error opening file %s\n", fileName);
-        printf("<press any key to quit>");
+        printf("Error opening file %s\nFile can be downloaded from the github repository\n", fileName);
+        printf("<press enter to quit>");
         getchar();
         return 1;
     }
