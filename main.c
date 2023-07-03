@@ -7,29 +7,36 @@
 #include <string.h>
 #include <time.h>
 
+// Global constants
 #define MAX_NUM_CHAMPIONS 200
 #define MAX_NAME_LENGTH 100
 
-int main() {
-    // Open champion file
-    char fileName[] = "champions.txt";
-    FILE *championsFile;
-    championsFile = fopen(fileName, "r");
+// Global variables
+char *charactersList[MAX_NUM_CHAMPIONS];
+int numberOfCharacters = 0;
+char *playerList[10];
+long numberPlayers;
+char input[10];
+char *endPointer;
+
+void read_file() {
+    char *fileName;
+    fileName = "champions.txt";
+
+    // Open selected file
+    FILE *charactersFile;
+    charactersFile = fopen(fileName, "r");
     // Check if file was correctly opened
-    if (!championsFile) {
+    if (!charactersFile) {
         printf("Error opening file %s\nFile can be downloaded from the github repository\n", fileName);
         printf("<press enter to quit>");
         getchar();
-        return 1;
+        return;
     }
 
-    // Creating variables
-    char line[MAX_NAME_LENGTH];
-    char *championsList[MAX_NUM_CHAMPIONS];
-    int numberOfChampions = 0;
-
     // Writes file to list
-    while (fgets(line, sizeof(line), championsFile) != NULL) {
+    char line[MAX_NAME_LENGTH];
+    while (fgets(line, sizeof(line), charactersFile) != NULL) {
         // Remove newline character from each line
         line[strcspn(line, "\n")] = '\0';
 
@@ -48,39 +55,38 @@ int main() {
         }
 
         // Adding champion name to list
-        championsList[numberOfChampions] = championName;
-        ++numberOfChampions;
+        charactersList[numberOfCharacters] = championName;
+        ++numberOfCharacters;
 
         // Check if list size was reached
-        if (numberOfChampions >= MAX_NUM_CHAMPIONS) {
-            printf("Maximum number of champions reached\n"
-                   "Modify MAX_NUM_CHAMPIONS variable to fix");
+        if (numberOfCharacters >= MAX_NUM_CHAMPIONS) {
+            printf("Maximum number of champions reached\n");
             break;
         }
     }
     // Close file
-    fclose(championsFile);
+    fclose(charactersFile);
+}
 
+void get_num_players() {
     // Getting number of players
-    long numberPlayers;
-    char input[10];
-    char *endPointer;
     while (1) {
         // Getting user input
-        printf("Enter number of players (maximum 10)>> ");
+        printf("Enter number of players (maximum 10) >> ");
         fgets(input, sizeof(input), stdin);
         numberPlayers = strtol(input, &endPointer, 10);
 
         // Check if input is valid
-        if (errno == ERANGE || *endPointer != '\n' || numberPlayers < 1 || numberPlayers > 10){
-            printf("Invalid input");
+        if (errno == ERANGE || *endPointer != '\n' || numberPlayers < 1 || numberPlayers > 10) {
+            printf("Invalid input\n");
         } else
             break;
     }
+}
 
+void get_players_nickname() {
     // Creating variables
     char playerName[MAX_NAME_LENGTH];
-    char *playerList[10];
 
     // Getting players nicknames
     for (int player = 0; player < numberPlayers; ++player) {
@@ -89,33 +95,42 @@ int main() {
         getchar();
 
         // Allocating memory
-        char* playerNickname = malloc(strlen(playerName) + 1);
+        char *playerNickname = malloc(strlen(playerName) + 1);
 
         // Copying player nickname to list
         strcpy(playerNickname, playerName);
         playerList[player] = playerNickname;
     }
+}
 
+void choosing_characters() {
     // Randomly choosing a champion from list and assigning it to player
     long userChoice;
     srand(clock());
     while (1) {
         for (int player = 0; player < numberPlayers; ++player) {
-            int selectedChampion = rand() % numberOfChampions;
-            printf("%s >> %s\n", playerList[player], championsList[selectedChampion]);
+            int selectedChampion = rand() % numberOfCharacters;
+            printf("%s >> %s\n", playerList[player], charactersList[selectedChampion]);
         }
+
+        // Prompt user to re-roll or quit program
         printf("1. Re-roll\n0. Quit\n>> ");
         fgets(input, sizeof(input), stdin);
         userChoice = strtol(input, &endPointer, 10);
-        if (userChoice == 1)
-            continue;
         if (userChoice == 0)
             break;
     }
+}
+
+int main() {
+    read_file();
+    get_num_players();
+    get_players_nickname();
+    choosing_characters();
 
     // Free allocated memory
-    for (int champion = 0; champion < numberOfChampions; ++champion) {
-        free(championsList[champion]);
+    for (int champion = 0; champion < numberOfCharacters; ++champion) {
+        free(charactersList[champion]);
     }
     for (int player = 0; player < numberPlayers; ++player) {
         free(playerList[player]);
