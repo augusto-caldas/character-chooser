@@ -96,6 +96,23 @@ int main() {
         playerList[player] = playerNickname;
     }
 
+    // Randomly choosing a champion from list and assigning it to player
+    long userChoice;
+    srand(clock());
+    while (1) {
+        for (int player = 0; player < numberPlayers; ++player) {
+            int selectedChampion = rand() % numberOfChampions;
+            printf("%s >> %s\n", playerList[player], championsList[selectedChampion]);
+        }
+        printf("1. Re-roll\n0. Quit\n>> ");
+        fgets(input, sizeof(input), stdin);
+        userChoice = strtol(input, &endPointer, 10);
+        if (userChoice == 1)
+            continue;
+        if (userChoice == 0)
+            break;
+    }
+
     // Free allocated memory
     for (int champion = 0; champion < numberOfChampions; ++champion) {
         free(championsList[champion]);
