@@ -1,6 +1,6 @@
 // Randomly choose a champion for each player
 // Champion are read from file and players requested on the fly
-// Version: 1.1
+// Version: 1.2
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,13 +21,13 @@ char *endPointer;
 long gameChoice;
 
 void read_file() {
-    // reset global variables
+    // Reset global variables
     numberOfCharacters = 0;
     for (int character = 0; character < numberOfCharacters; ++character) {
         free(charactersList[character]);
     }
 
-    // selecting file
+    // Selecting file
     char *fileName;
     if (gameChoice == 1)
         fileName = "champions.txt";
@@ -80,6 +80,7 @@ void read_file() {
 }
 
 void choose_game() {
+    // Prompt user to select a game
     printf("Choose a game\n1. League of Legends\n2. Valorant\n>> ");
     fgets(input, sizeof(input), stdin);
     gameChoice = strtol(input, &endPointer, 10);
@@ -108,13 +109,13 @@ void shuffle_teams() {
     for (int currentIndex = numberPlayers - 1; currentIndex > 0; --currentIndex) {
         // Randomly pick a player index on list
         int randomIndex = rand() % (currentIndex + 1);
-        
+
         // Swap players
         char *tempPlayer = playerList[currentIndex];
         playerList[currentIndex] = playerList[randomIndex];
         playerList[randomIndex] = tempPlayer;
     }
-    
+
     split_teams();
 }
 
@@ -158,7 +159,7 @@ void get_players_nicknames() {
     fgets(input, sizeof(input), stdin);
     userInput = strtol(input, &endPointer, 10);
 
-    if (userInput == 1){
+    if (userInput == 1) {
         if (numberPlayers % 2 == 0) {
             shuffle_teams();
         } else {
@@ -174,8 +175,8 @@ void choosing_characters() {
     // Randomly choosing a champion from list and assigning it to player
     printf("\n");
     for (int player = 0; player < numberPlayers; ++player) {
-        int selectedChampion = rand() % numberOfCharacters;
-        printf("%s >> %s\n", playerList[player], charactersList[selectedChampion]);
+        int selectedCharacter = rand() % numberOfCharacters;
+        printf("%s >> %s\n", playerList[player], charactersList[selectedCharacter]);
     }
 
     printf("\n<press enter to continue>\n");
