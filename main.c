@@ -153,30 +153,34 @@ int main() {
         printf("1. Re-roll\n2. Change number of players\n3. Change players nickname\n4. Change game\n0. Quit\n>> ");
         fgets(input, sizeof(input), stdin);
         userChoice = strtol(input, &endPointer, 10);
-        if (userChoice == 0) {
-            break;
-        } else if (userChoice == 1) {
-            choosing_characters();
-        } else if (userChoice == 2) {
-            get_num_players();
-            get_players_nicknames();
-        } else if (userChoice == 3) {
-            get_players_nicknames();
-        } else if (userChoice == 4) {
-            choose_game();
-            read_file();
-        } else {
-            printf("Invalid input\n");
+        switch (userChoice) {
+            case 0:
+                // Free allocated memory
+                for (int character = 0; character < numberOfCharacters; ++character) {
+                    free(charactersList[character]);
+                }
+                for (int player = 0; player < numberPlayers; ++player) {
+                    free(playerList[player]);
+                }
+                // Exit program
+                return 1;
+            case 1:
+                choosing_characters();
+                break;
+            case 2:
+                get_num_players();
+                get_players_nicknames();
+                break;
+            case 3:
+                get_players_nicknames();
+                break;
+            case 4:
+                choose_game();
+                read_file();
+                break;
+            default:
+                printf("Invalid input\n");
+                break;
         }
     }
-
-    // Free allocated memory
-    for (int character = 0; character < numberOfCharacters; ++character) {
-        free(charactersList[character]);
-    }
-    for (int player = 0; player < numberPlayers; ++player) {
-        free(playerList[player]);
-    }
-
-    return 1;
 }
