@@ -1,2 +1,2 @@
-# champion-chooser
- Randomly choose champions from a file and assign it to players
+# character-chooser
+ Randomly choose characters from files and assign it to players

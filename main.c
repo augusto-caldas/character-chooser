@@ -1,5 +1,3 @@
-// Randomly choose a champion for each player
-// Champion are read from file and players requested on the fly
 // Version: 1.2
 
 #include <stdio.h>
@@ -158,7 +156,7 @@ void get_players_nicknames() {
     printf("1. Randomly split teams\n0. Continue\n>> ");
     fgets(input, sizeof(input), stdin);
     userInput = strtol(input, &endPointer, 10);
-
+    
     if (userInput == 1) {
         if (numberPlayers % 2 == 0) {
             shuffle_teams();
