@@ -103,6 +103,9 @@ void split_teams() {
 }
 
 void shuffle_teams() {
+    // Set srand seed
+    srand(clock());
+    
     // Go through players
     for (int currentIndex = numberPlayers - 1; currentIndex > 0; --currentIndex) {
         // Randomly pick a player index on list
@@ -170,6 +173,9 @@ void get_players_nicknames() {
 }
 
 void choosing_characters() {
+    // Set srand seed
+    srand(clock());
+
     // Randomly choosing a champion from list and assigning it to player
     printf("\n");
     for (int player = 0; player < numberPlayers; ++player) {
@@ -182,9 +188,6 @@ void choosing_characters() {
 }
 
 int main() {
-    // Set srand seed
-    srand(clock());
-
     // Prompt user to choose a game
     choose_game();
 
