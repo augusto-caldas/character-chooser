@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <errno.h>
 
 // Global constants
 #define MAX_NUM_CHARACTER 200
@@ -40,7 +41,7 @@ void read_file() {
         printf("Error opening file %s\nFile can be downloaded from the github repository\n", fileName);
         printf("<press enter to quit>");
         getchar();
-        return;
+        exit(0);
     }
 
     // Writes file to list
@@ -86,7 +87,7 @@ void choose_game() {
 
 void split_teams() {
     // Get max number of players per team
-    int playersPerTeam = (numberPlayers + 1) / 2;
+    long playersPerTeam = (numberPlayers + 1) / 2;
 
     // Split teams between the first half and second half of the list
     printf("\n---Team 1---\n");
@@ -94,7 +95,7 @@ void split_teams() {
         printf("%s\n", playerList[currPlayer]);
     }
     printf("\n---Team 2---\n");
-    for (int currPlayer = playersPerTeam; currPlayer < numberPlayers; ++currPlayer) {
+    for (long currPlayer = playersPerTeam; currPlayer < numberPlayers; ++currPlayer) {
         printf("%s\n", playerList[currPlayer]);
     }
 
@@ -103,13 +104,13 @@ void split_teams() {
 }
 
 void shuffle_teams() {
-    // Set srand seed
+    // Set rand seed
     srand(clock());
     
     // Go through players
-    for (int currentIndex = numberPlayers - 1; currentIndex > 0; --currentIndex) {
+    for (long currentIndex = numberPlayers - 1; currentIndex > 0; --currentIndex) {
         // Randomly pick a player index on list
-        int randomIndex = rand() % (currentIndex + 1);
+        long randomIndex = rand() % (currentIndex + 1);
 
         // Swap players
         char *tempPlayer = playerList[currentIndex];
@@ -173,7 +174,7 @@ void get_players_nicknames() {
 }
 
 void choosing_characters() {
-    // Set srand seed
+    // Set rand seed
     srand(clock());
 
     // Randomly choosing a champion from list and assigning it to player
