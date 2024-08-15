@@ -20,3 +20,5 @@ Fade
 Harbor
 Gekko
 Deadlock
+Iso
+Clove
