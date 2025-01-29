@@ -13,33 +13,33 @@
 #define MAX_NAME_LENGTH 100
 
 // Global variables
-char* charactersList[MAX_NUM_CHARACTER];
-char* playerList[10];
-char input[10];
-char* endPointer;
-int numberOfCharacters = 0;
-long numberPlayers;
-long gameChoice;
+char* g_characters_list[MAX_NUM_CHARACTER];
+char* g_player_list[10];
+char g_input[10];
+char* g_end_pointer;
+int g_number_of_characters = 0;
+long g_number_players;
+long g_game_choice;
 
 void read_file() {
 	// Reset global variables
-	for (int character = 0; character < numberOfCharacters; ++character) {
-		free(charactersList[character]);
+	for (int character = 0; character < g_number_of_characters; ++character) {
+		free(g_characters_list[character]);
 	}
-	numberOfCharacters = 0;
+	g_number_of_characters = 0;
 
 	// Selecting file
-	char* fileName;
-	if (gameChoice == 1)
-		fileName = "champions.txt";
+	char* file_name;
+	if (g_game_choice == 1)
+		file_name = "champions.txt";
 	else
-		fileName = "agents.txt";
+		file_name = "agents.txt";
 
 	// Open selected file
-	FILE* charactersFile = fopen(fileName, "r");
+	FILE* characters_file = fopen(file_name, "r");
 	// Check if file was correctly opened
-	if (!charactersFile) {
-		printf("Error opening file %s\nFile can be downloaded from the github repository\n", fileName);
+	if (!characters_file) {
+		printf("Error opening file %s\nFile can be downloaded from the github repository\n", file_name);
 		printf("<press enter to quit>");
 		getchar();
 		exit(0);
@@ -47,57 +47,57 @@ void read_file() {
 
 	// Writes file to list
 	char line[MAX_NAME_LENGTH];
-	while (fgets(line, sizeof(line), charactersFile) != NULL) {
+	while (fgets(line, sizeof(line), characters_file) != NULL) {
 		// Remove newline character from each line
 		line[strcspn(line, "\n")] = '\0';
 
 		// Split line into first name and second name
-		char* firstName = strtok(line, " ");
-		char* secondName = strtok(NULL, " ");
+		char* first_name = strtok(line, " ");
+		char* second_name = strtok(NULL, " ");
 
 		// Allocating memory for the name and copy it into the list
-		char* characterName;
-		if (secondName != NULL) {
-			characterName = malloc(strlen(firstName) + strlen(secondName) + 2);
-			sprintf(characterName, "%s %s", firstName, secondName);
+		char* character_name;
+		if (second_name != NULL) {
+			character_name = malloc(strlen(first_name) + strlen(second_name) + 2);
+			sprintf(character_name, "%s %s", first_name, second_name);
 		} else {
-			characterName = malloc(strlen(firstName) + 1);
-			sprintf(characterName, "%s", firstName);
+			character_name = malloc(strlen(first_name) + 1);
+			sprintf(character_name, "%s", first_name);
 		}
 
 		// Adding character name to list
-		charactersList[numberOfCharacters] = characterName;
-		++numberOfCharacters;
+		g_characters_list[g_number_of_characters] = character_name;
+		++g_number_of_characters;
 
 		// Check if list size was reached
-		if (numberOfCharacters >= MAX_NUM_CHARACTER) {
+		if (g_number_of_characters >= MAX_NUM_CHARACTER) {
 			printf("Maximum number of champions reached\n");
 			break;
 		}
 	}
 	// Close file
-	fclose(charactersFile);
+	fclose(characters_file);
 }
 
 void choose_game() {
 	// Prompt user to select a game
 	printf("Choose a game\n1. League of Legends\n2. Valorant\n>> ");
-	fgets(input, sizeof(input), stdin);
-	gameChoice = strtol(input, &endPointer, 10);
+	fgets(g_input, sizeof(g_input), stdin);
+	g_game_choice = strtol(g_input, &g_end_pointer, 10);
 }
 
 void split_teams() {
 	// Get max number of players per team
-	const long playersPerTeam = (numberPlayers + 1) / 2;
+	const long players_per_team = (g_number_players + 1) / 2;
 
 	// Split teams between the first half and second half of the list
 	printf("\n---Team 1---\n");
-	for (int currPlayer = 0; currPlayer < playersPerTeam; ++currPlayer) {
-		printf("%s\n", playerList[currPlayer]);
+	for (int curr_player = 0; curr_player < players_per_team; ++curr_player) {
+		printf("%s\n", g_player_list[curr_player]);
 	}
 	printf("\n---Team 2---\n");
-	for (long currPlayer = playersPerTeam; currPlayer < numberPlayers; ++currPlayer) {
-		printf("%s\n", playerList[currPlayer]);
+	for (long curr_player = players_per_team; curr_player < g_number_players; ++curr_player) {
+		printf("%s\n", g_player_list[curr_player]);
 	}
 
 	printf("\n<press enter to continue>\n");
@@ -109,14 +109,14 @@ void shuffle_teams() {
 	srand(clock());
 
 	// Go through players
-	for (long currentIndex = numberPlayers - 1; currentIndex > 0; --currentIndex) {
+	for (long current_index = g_number_players - 1; current_index > 0; --current_index) {
 		// Randomly pick a player index on list
-		const long randomIndex = rand() % (currentIndex + 1);
+		const long random_index = rand() % (current_index + 1);
 
 		// Swap players
-		char* tempPlayer = playerList[currentIndex];
-		playerList[currentIndex] = playerList[randomIndex];
-		playerList[randomIndex] = tempPlayer;
+		char* tempPlayer = g_player_list[current_index];
+		g_player_list[current_index] = g_player_list[random_index];
+		g_player_list[random_index] = tempPlayer;
 	}
 
 	split_teams();
@@ -127,11 +127,11 @@ void get_num_players() {
 	while (1) {
 		// Getting user input
 		printf("Enter number of players (maximum 10) >> ");
-		fgets(input, sizeof(input), stdin);
-		numberPlayers = strtol(input, &endPointer, 10);
+		fgets(g_input, sizeof(g_input), stdin);
+		g_number_players = strtol(g_input, &g_end_pointer, 10);
 
 		// Check if input is valid
-		if (errno == ERANGE || *endPointer != '\n' || numberPlayers < 1 || numberPlayers > 10) {
+		if (errno == ERANGE || *g_end_pointer != '\n' || g_number_players < 1 || g_number_players > 10) {
 			printf("Invalid input\n");
 		} else
 			break;
@@ -140,27 +140,27 @@ void get_num_players() {
 
 void get_players_nicknames() {
 	// Getting players nicknames
-	for (int player = 0; player < numberPlayers; ++player) {
-		char playerName[MAX_NAME_LENGTH];
+	for (int player = 0; player < g_number_players; ++player) {
+		char player_name[MAX_NAME_LENGTH];
 		printf("Enter player %d nickname >> ", player + 1);
-		scanf("%s", playerName);
+		scanf("%s", player_name);
 		getchar();
 
 		// Allocating memory
-		char* playerNickname = malloc(strlen(playerName) + 1);
+		char* player_nickname = malloc(strlen(player_name) + 1);
 
 		// Copying player nickname to list
-		strcpy(playerNickname, playerName);
-		playerList[player] = playerNickname;
+		strcpy(player_nickname, player_name);
+		g_player_list[player] = player_nickname;
 	}
 
 	// Prompt user to randomly separate teams or not
 	printf("1. Randomly split teams\n0. Continue\n>> ");
-	fgets(input, sizeof(input), stdin);
-	long userInput = strtol(input, &endPointer, 10);
+	fgets(g_input, sizeof(g_input), stdin);
+	long userInput = strtol(g_input, &g_end_pointer, 10);
 
 	if (userInput == 1) {
-		if (numberPlayers % 2 == 0) {
+		if (g_number_players % 2 == 0) {
 			shuffle_teams();
 		} else {
 			printf("Teams will not be even\n");
@@ -177,9 +177,9 @@ void choosing_characters() {
 
 	// Randomly choosing a champion from list and assigning it to player
 	printf("\n");
-	for (int player = 0; player < numberPlayers; ++player) {
-		int selectedCharacter = rand() % numberOfCharacters;
-		printf("%s >> %s\n", playerList[player], charactersList[selectedCharacter]);
+	for (int player = 0; player < g_number_players; ++player) {
+		int selectedCharacter = rand() % g_number_of_characters;
+		printf("%s >> %s\n", g_player_list[player], g_characters_list[selectedCharacter]);
 	}
 
 	printf("\n<press enter to continue>\n");
@@ -203,18 +203,25 @@ int main() {
 	// Main loop
 	while (1) {
 		// Interactive menu
-		printf("1. Re-roll\n2. Shuffle Teams\n3. Change number of players\n4. Change players nickname\n"
-			"5. Change game\n0. Quit\n>> ");
-		fgets(input, sizeof(input), stdin);
-		long userInput = strtol(input, &endPointer, 10);
-		switch (userInput) {
+		printf(
+			"1. Re-roll\n"
+			"2. Shuffle Teams\n"
+			"3. Change number of players\n"
+			"4. Change players nickname\n"
+			"5. Change game\n"
+			"0. Quit\n>> "
+		);
+		fgets(g_input, sizeof(g_input), stdin);
+		long user_input = strtol(g_input, &g_end_pointer, 10);
+
+		switch (user_input) {
 		case 0:
 			// Free allocated memory
-			for (int character = 0; character < numberOfCharacters; ++character) {
-				free(charactersList[character]);
+			for (int character = 0; character < g_number_of_characters; ++character) {
+				free(g_characters_list[character]);
 			}
-			for (int player = 0; player < numberPlayers; ++player) {
-				free(playerList[player]);
+			for (int player = 0; player < g_number_players; ++player) {
+				free(g_player_list[player]);
 			}
 			return 1;
 		case 1:
