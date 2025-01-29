@@ -19,9 +19,13 @@ char g_input[10];
 char* g_end_pointer;
 int g_number_of_characters = 0;
 long g_number_players;
-long g_game_choice;
 
-void read_file() {
+/**
+ * Read File based on the chosen game passed.
+ *
+ * @param chosen_game chosen game, 1=League of Legends or 2=Valorant.
+ */
+void read_file(const long chosen_game) {
 	// Reset global variables
 	for (int character = 0; character < g_number_of_characters; ++character) {
 		free(g_characters_list[character]);
@@ -30,16 +34,16 @@ void read_file() {
 
 	// Selecting file
 	char* file_name;
-	if (g_game_choice == 1)
+	if (chosen_game == 1)
 		file_name = "champions.txt";
 	else
 		file_name = "agents.txt";
 
 	// Open selected file
 	FILE* characters_file = fopen(file_name, "r");
-	// Check if file was correctly opened
 	if (!characters_file) {
-		printf("Error opening file %s\nFile can be downloaded from the github repository\n", file_name);
+		printf("\033[0;31mError opening file %s\033[0m\nFile can be downloaded from the github repository\n",
+		       file_name);
 		printf("<press enter to quit>");
 		fgets(g_input, sizeof(g_input), stdin);
 		exit(0);
@@ -79,13 +83,34 @@ void read_file() {
 	fclose(characters_file);
 }
 
+/**
+ * Prompts user to choose game
+ * 1 = League of Legends
+ * 2 = Valorant
+ */
 void choose_game() {
-	// Prompt user to select a game
-	printf("Choose a game\n1. League of Legends\n2. Valorant\n>> ");
-	fgets(g_input, sizeof(g_input), stdin);
-	g_game_choice = strtol(g_input, &g_end_pointer, 10);
+	while (1) {
+		// Prompt user to select a game
+		printf(
+			"\nChoose a game\n"
+			"1. League of Legends\n"
+			"2. Valorant\n>> "
+		);
+		fgets(g_input, sizeof(g_input), stdin);
+		const long game_choice = strtol(g_input, &g_end_pointer, 10);
+
+		if (game_choice == 1 || game_choice == 2) {
+			read_file(game_choice);
+			break;
+		}
+
+		printf("\033[0;31m\nInvalid input\n\033[0m");
+	}
 }
 
+/**
+ * Split players into two teams based on the list sequence
+ */
 void split_teams() {
 	// Get max number of players per team
 	const long players_per_team = (g_number_players + 1) / 2;
@@ -104,6 +129,9 @@ void split_teams() {
 	fgets(g_input, sizeof(g_input), stdin);
 }
 
+/**
+ * Randomly shuffle players list
+ */
 void shuffle_teams() {
 	// Set rand seed
 	srand(clock());
@@ -122,23 +150,30 @@ void shuffle_teams() {
 	split_teams();
 }
 
+/**
+ * Prompt user to enter number of players (1-10)
+ */
 void get_num_players() {
 	// Getting number of players
 	while (1) {
 		// Getting user input
-		printf("Enter number of players (maximum 10) >> ");
+		printf("\nEnter number of players (1-10) >> ");
 		fgets(g_input, sizeof(g_input), stdin);
 		g_number_players = strtol(g_input, &g_end_pointer, 10);
 
 		// Check if input is valid
 		if (errno == ERANGE || *g_end_pointer != '\n' || g_number_players < 1 || g_number_players > 10) {
-			printf("Invalid input\n");
+			printf("\033[0;31m\nInvalid input\n\033[0m");
 		} else
 			break;
 	}
 }
 
+/**
+ * Prompt user to enter players nicknames
+ */
 void get_players_nicknames() {
+	printf("\n");
 	// Getting players nicknames
 	for (int player = 0; player < g_number_players; ++player) {
 		char player_name[MAX_NAME_LENGTH];
@@ -155,11 +190,14 @@ void get_players_nicknames() {
 	}
 
 	// Prompt user to randomly separate teams or not
-	printf("1. Randomly split teams\n0. Continue\n>> ");
+	printf(
+		"\n1. Randomly split teams\n"
+		"0. Continue\n>> "
+	);
 	fgets(g_input, sizeof(g_input), stdin);
-	long userInput = strtol(g_input, &g_end_pointer, 10);
+	const long user_input = strtol(g_input, &g_end_pointer, 10);
 
-	if (userInput == 1) {
+	if (user_input == 1) {
 		if (g_number_players % 2 == 0) {
 			shuffle_teams();
 		} else {
@@ -171,6 +209,9 @@ void get_players_nicknames() {
 	}
 }
 
+/**
+ * Randomly select a characters from the character list and assign to players
+ */
 void choosing_characters() {
 	// Set rand seed
 	srand(clock());
@@ -178,8 +219,8 @@ void choosing_characters() {
 	// Randomly choosing a champion from list and assigning it to player
 	printf("\n");
 	for (int player = 0; player < g_number_players; ++player) {
-		int selectedCharacter = rand() % g_number_of_characters;
-		printf("%s >> %s\n", g_player_list[player], g_characters_list[selectedCharacter]);
+		const int selected_character = rand() % g_number_of_characters;
+		printf("%s >> %s\n", g_player_list[player], g_characters_list[selected_character]);
 	}
 
 	printf("\n<press enter to continue>\n");
@@ -189,9 +230,6 @@ void choosing_characters() {
 int main() {
 	// Prompt user to choose a game
 	choose_game();
-
-	// Read file based on user choice
-	read_file();
 
 	// Prompt user to enter players information
 	get_num_players();
@@ -212,10 +250,10 @@ int main() {
 			"0. Quit\n>> "
 		);
 		fgets(g_input, sizeof(g_input), stdin);
-		long user_input = strtol(g_input, &g_end_pointer, 10);
+		const long user_input = strtol(g_input, &g_end_pointer, 10);
 
 		if (errno == ERANGE || *g_end_pointer != '\n' || user_input < 0 || user_input > 5) {
-			printf("Invalid input\n");
+			printf("\033[0;31m\nInvalid input\n\033[0m");
 		} else {
 			switch (user_input) {
 			case 1:
@@ -233,7 +271,6 @@ int main() {
 				break;
 			case 5:
 				choose_game();
-				read_file();
 				break;
 			default:
 				// Free allocated memory
