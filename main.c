@@ -9,7 +9,7 @@
 #include <errno.h>
 
 // Global constants
-#define MAX_NUM_CHARACTER 200
+#define MAX_NUM_CHARACTER 250
 #define MAX_NAME_LENGTH 100
 
 // Global variables
@@ -33,11 +33,7 @@ void read_file(const long chosen_game) {
 	g_number_of_characters = 0;
 
 	// Selecting file
-	char* file_name;
-	if (chosen_game == 1)
-		file_name = "champions.txt";
-	else
-		file_name = "agents.txt";
+	char* file_name = chosen_game == 1 ? "champions.txt" : "agents.txt";
 
 	// Open selected file
 	FILE* characters_file = fopen(file_name, "r");
@@ -134,12 +130,12 @@ void split_teams() {
  */
 void shuffle_teams() {
 	// Set rand seed
-	srand(clock());
+	srandom(clock());
 
 	// Go through players
 	for (long current_index = g_number_players - 1; current_index > 0; --current_index) {
 		// Randomly pick a player index on list
-		const long random_index = rand() % (current_index + 1);
+		const long random_index = random() % (current_index + 1);
 
 		// Swap players
 		char* tempPlayer = g_player_list[current_index];
@@ -214,12 +210,12 @@ void get_players_nicknames() {
  */
 void choosing_characters() {
 	// Set rand seed
-	srand(clock());
+	srandom(clock());
 
 	// Randomly choosing a champion from list and assigning it to player
 	printf("\n");
 	for (int player = 0; player < g_number_players; ++player) {
-		const int selected_character = rand() % g_number_of_characters;
+		const long selected_character = random() % g_number_of_characters;
 		printf("%s >> %s\n", g_player_list[player], g_characters_list[selected_character]);
 	}
 
