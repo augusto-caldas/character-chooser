@@ -41,7 +41,7 @@ void read_file() {
 	if (!characters_file) {
 		printf("Error opening file %s\nFile can be downloaded from the github repository\n", file_name);
 		printf("<press enter to quit>");
-		getchar();
+		fgets(g_input, sizeof(g_input), stdin);
 		exit(0);
 	}
 
@@ -101,7 +101,7 @@ void split_teams() {
 	}
 
 	printf("\n<press enter to continue>\n");
-	getchar();
+	fgets(g_input, sizeof(g_input), stdin);
 }
 
 void shuffle_teams() {
@@ -144,7 +144,7 @@ void get_players_nicknames() {
 		char player_name[MAX_NAME_LENGTH];
 		printf("Enter player %d nickname >> ", player + 1);
 		scanf("%s", player_name);
-		getchar();
+		fgets(g_input, sizeof(g_input), stdin);
 
 		// Allocating memory
 		char* player_nickname = malloc(strlen(player_name) + 1);
@@ -165,7 +165,7 @@ void get_players_nicknames() {
 		} else {
 			printf("Teams will not be even\n");
 			printf("\n<press enter to continue>\n");
-			getchar();
+			fgets(g_input, sizeof(g_input), stdin);
 			shuffle_teams();
 		}
 	}
@@ -183,7 +183,7 @@ void choosing_characters() {
 	}
 
 	printf("\n<press enter to continue>\n");
-	getchar();
+	fgets(g_input, sizeof(g_input), stdin);
 }
 
 int main() {
@@ -214,36 +214,37 @@ int main() {
 		fgets(g_input, sizeof(g_input), stdin);
 		long user_input = strtol(g_input, &g_end_pointer, 10);
 
-		switch (user_input) {
-		case 0:
-			// Free allocated memory
-			for (int character = 0; character < g_number_of_characters; ++character) {
-				free(g_characters_list[character]);
-			}
-			for (int player = 0; player < g_number_players; ++player) {
-				free(g_player_list[player]);
-			}
-			return 1;
-		case 1:
-			choosing_characters();
-			break;
-		case 2:
-			shuffle_teams();
-			break;
-		case 3:
-			get_num_players();
-			get_players_nicknames();
-			break;
-		case 4:
-			get_players_nicknames();
-			break;
-		case 5:
-			choose_game();
-			read_file();
-			break;
-		default:
+		if (errno == ERANGE || *g_end_pointer != '\n' || user_input < 0 || user_input > 5) {
 			printf("Invalid input\n");
-			break;
+		} else {
+			switch (user_input) {
+			case 1:
+				choosing_characters();
+				break;
+			case 2:
+				shuffle_teams();
+				break;
+			case 3:
+				get_num_players();
+				get_players_nicknames();
+				break;
+			case 4:
+				get_players_nicknames();
+				break;
+			case 5:
+				choose_game();
+				read_file();
+				break;
+			default:
+				// Free allocated memory
+				for (int character = 0; character < g_number_of_characters; ++character) {
+					free(g_characters_list[character]);
+				}
+				for (int player = 0; player < g_number_players; ++player) {
+					free(g_player_list[player]);
+				}
+				return 0;
+			}
 		}
 	}
 }
